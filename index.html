@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Google Text To Speech MP3</title>
+<style>
+body{
+    font-family: Arial;
+    padding:20px;
+}
+textarea{
+    width:100%;
+    height:200px;
+}
+button,select{
+    padding:10px;
+    margin:5px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Chuyển văn bản thành giọng nói Google</h2>
+
+<textarea id="text" placeholder="Nhập văn bản..."></textarea>
+
+<br>
+
+<select id="voice">
+    <option value="vi-VN-Wavenet-A">Nữ Việt Nam A</option>
+    <option value="vi-VN-Wavenet-B">Nam Việt Nam B</option>
+    <option value="vi-VN-Wavenet-C">Nữ Việt Nam C</option>
+    <option value="vi-VN-Wavenet-D">Nam Việt Nam D</option>
+</select>
+
+<br>
+
+<button onclick="convert()">Tạo MP3</button>
+
+<p id="status"></p>
+
+<audio id="audio" controls></audio>
+
+
+<script>
+
+async function convert(){
+
+let text=document.getElementById("text").value;
+let voice=document.getElementById("voice").value;
+
+document.getElementById("status").innerHTML="Đang xử lý...";
+
+
+let response=await fetch(
+"https://texttospeech.googleapis.com/v1/text:synthesize?key=YOUR_API_KEY",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+input:{
+text:text
+},
+
+voice:{
+languageCode:"vi-VN",
+name:voice
+},
+
+audioConfig:{
+audioEncoding:"MP3"
+}
+
+})
+
+});
+
+
+let data=await response.json();
+
+
+let audio=document.getElementById("audio");
+
+audio.src=
+"data:audio/mp3;base64,"+
+data.audioContent;
+
+
+audio.play();
+
+
+let link=document.createElement("a");
+link.href=audio.src;
+link.download="giongnoi.mp3";
+link.innerHTML="Tải MP3";
+
+document.body.appendChild(link);
+
+
+document.getElementById("status").innerHTML="Hoàn thành";
+
+}
+
+</script>
+
+</body>
+  </html>
